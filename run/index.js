@@ -58,24 +58,21 @@ function ActEnc(a){
   var shade
   for(let j=0;j<img_width;j++){
     for(let i=0;i<img_height;i++){
-      trial=
-        img.data[4*(i+img_width*j)]^
-        img.data[4*(i+img_width*j)+1]^
-        img.data[4*(i+img_width*j)+2]
-      trial ^= trial >> 4
-      trial ^= trial >> 2
-      trial ^= trial >> 1
       let scanner =
         Math.max(mask.data[4*(i+img_width*j)],
         mask.data[4*(i+img_width*j)+1],
         mask.data[4*(i+img_width*j)+2])
       shade=scanner>>6
 
-      if(shade==0){
-        img.data[4*(i+img_width*j)] ^= 0b11111111
-        img.data[4*(i+img_width*j)+1] ^= 0b11111111
-        img.data[4*(i+img_width*j)+2] ^= 0b11111111
-      }
+      r=img.data[4*(i+img_width*j)]&1
+      g=img.data[4*(i+img_width*j)+1]&1
+      b=img.data[4*(i+img_width*j)+2]&1
+
+      mod=r+2*g //eh
+
+      img.data[4*(i+img_width*j)] ^= mod==1
+      img.data[4*(i+img_width*j)+1] ^= mod==2
+      img.data[4*(i+img_width*j)+2] ^= mod==3
     }
   }
   const out = new PNG({width:img_width,height:img_height})
@@ -92,6 +89,38 @@ function ActDec(a){
   
 
   if (0) { Wrn(`Output path has no file, creating now`) }
+
+
+  const img = PNG.sync.read(fs.readFileSync(a+".png"));
+
+  const img_width=img.width
+  const img_height=img.height
+
+
+  
+
+
+  var trial
+  var shade
+  for(let j=0;j<img_width;j++){
+    for(let i=0;i<img_height;i++){
+     
+      let scanner =
+        Math.max(mask.data[4*(i+img_width*j)],
+        mask.data[4*(i+img_width*j)+1],
+        mask.data[4*(i+img_width*j)+2])
+      shade=scanner>>6
+
+      if(shade==0){
+        img.data[4*(i+img_width*j)] ^= 0b11111111
+        img.data[4*(i+img_width*j)+1] ^= 0b11111111
+        img.data[4*(i+img_width*j)+2] ^= 0b11111111
+      }
+    }
+  }
+  const out = new PNG({width:img_width,height:img_height})
+  out.data = img.data
+  out.pack().pipe(fs.createWriteStream( OutPath+".png" ));
 
 
   Scc(`Image path illuminated properly iw${img_width} ih${img_height}`);
