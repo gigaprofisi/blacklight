@@ -9,15 +9,22 @@ function Wrn(a){process.stdout.write("?"+a+"\n")}
 
 
 function QE(c,m){ //qa cube, opt later
-  if(m==0)return [0,0,0,7,0,7,7,7][c]
-  if(m==1)return [1,1,6,1,6,1,6,6][c]
-  if(m==2)return [2,5,2,2,5,5,2,5][c]
-  if(m==3)return [4,3,3,3,4,4,4,3][c]
-}
-function DE(q){ //qa flat
-  return [0,1,2,3,3,2,1,0][q]
+  if(m==0)return c^[0,0,0,7,0,7,7,7][c]
+  if(m==1)return c^[1,1,6,1,6,1,6,6][c]
+  if(m==2)return c^[2,5,2,2,5,5,2,5][c]
+  if(m==3)return c^[4,3,3,3,4,4,4,3][c]
 }
 
+function QE2(c){ //qa cube, opt later
+  return (7*(c&4&&1))^c
+}
+function DE(q){ //qa flat
+  return (7*(q&4&&1))^q
+}
+
+for(let m=0;m<4;m++)for(let c=0;c<8;c++){
+  console.log(c,m,QE(c,m),QE2(c,m), QE(c,m)==QE2(c,m))
+}
 
 
 var MaskPath = "";
@@ -66,47 +73,22 @@ function ActEnc(a){
   
 
 
-  var shade
+  var mod
   for(let j=0;j<img_width;j++){
-    for(let i=0;i<img_height;i++){
-      // just for convenience
-      let scanner =
-        Math.max(mask.data[4*(i+img_width*j)],
+    for(let i=0;i<img_width;i++){
+
+      mod = ((img.data[4*(i+img_width*j)]&1)<<2)+
+      ((img.data[4*(i+img_width*j)+1]&1)<<1)+(img.data[4*(i+img_width*j)+2]&1)
+      let shade = Math.max( // this shading thing can be changed
+        mask.data[4*(i+img_width*j)],
         mask.data[4*(i+img_width*j)+1],
-        mask.data[4*(i+img_width*j)+2])
-      shade=scanner>>6
+        mask.data[4*(i+img_width*j)+2])>>6
+      mod =QE2(mod)^shade
 
+      img.data[4*(i+img_width*j)] ^= (mod&4)>>2
+      img.data[4*(i+img_width*j)+1] ^= (mod&2)>>1
+      img.data[4*(i+img_width*j)+2] ^= (mod&1)
 
-      r=img.data[4*(i+img_width*j)]&1
-      g=img.data[4*(i+img_width*j)+1]&1
-      b=img.data[4*(i+img_width*j)+2]&1
-
-      mod = 4*r+2*g+b
-      mod^=QE(mod,shade)
-
-      //  console.log(mod.toString(2), DE(mod))
-
-      // console.log(mod&4,mod&2,mod&1)
-
-
-      
-      
-
-      // mod=(4*r+2*g+b)
-      img.data[4*(i+img_width*j)] ^= ((mod&4)==4)
-      img.data[4*(i+img_width*j)+1] ^= ((mod&2)==2)
-      img.data[4*(i+img_width*j)+2] ^= ((mod&1)==1)
-
-
-      
-      
-      // r=img.data[4*(i+img_width*j)]&1
-      // g=img.data[4*(i+img_width*j)+1]&1
-      // b=img.data[4*(i+img_width*j)+2]&1
-
-      // mod=(4*r+2*g+b)
-      // console.log(mod,DE(mod))
-      // console.log()
     }
   }
   const out = new PNG({width:img_width,height:img_height})
@@ -120,10 +102,8 @@ function ActEnc(a){
 
 function ActDec(a){
   if(MaskPath="") { Err(`Output path not set`); return; }
-  
 
   if (0) { Wrn(`Output path has no file, creating now`) }
-
 
   const img = PNG.sync.read(fs.readFileSync(a+".png"));
 
@@ -131,18 +111,9 @@ function ActDec(a){
   const img_height=img.height
 
 
-  
-
-
   for(let j=0;j<img_width;j++){
     for(let i=0;i<img_height;i++){
-     
-      
-      r=img.data[4*(i+img_width*j)]&1
-      g=img.data[4*(i+img_width*j)+1]&1
-      b=img.data[4*(i+img_width*j)+2]&1
-
-      mod=85*DE(4*r+2*g+b)
+      mod=85*DE(((img.data[4*(i+img_width*j)]&1)<<2)+((img.data[4*(i+img_width*j)+1]&1)<<1)+(img.data[4*(i+img_width*j)+2]&1))
 
       img.data[4*(i+img_width*j)] = mod
       img.data[4*(i+img_width*j)+1] = mod
