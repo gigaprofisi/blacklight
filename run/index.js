@@ -212,15 +212,18 @@ return;
 
 
 
-if(0){
-Feed("dat mask");
-Feed("out waba");
-Feed("enc swag");
-}
-else{
- Feed("out goodbye");
- Feed("dec waba");
-}
+// if(0){
+Feed("dat Homo_sapiens");
+Feed("out hiii");
+Feed("enc alfredo");
+// }else{
+
+setTimeout(()=>{
+  Feed("out byeeee");
+  Feed("dec alfredo");
+
+},1000)
+// }
 // result should be grayish??
 
 
