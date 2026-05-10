@@ -220,7 +220,7 @@ Feed("enc alfredo");
 
 setTimeout(()=>{
   Feed("out byeeee");
-  Feed("dec alfredo");
+  Feed("dec hiii");
 
 },1000)
 // }
