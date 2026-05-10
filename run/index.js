@@ -1,20 +1,56 @@
 
-const fs=require("fs")
+const fs = require("fs");
+const PNG = require('pngjs').PNG;
 
-"blacklight.exe"
 
 function Scc(a){process.stdout.write("."+a+"\n")}
 function Err(a){process.stdout.write("!"+a+"\n");throw a}
 function Wrn(a){process.stdout.write("?"+a+"\n")}
 
 
+var MaskPath = "";
+var OutPath = "";
+
+function ActDat(a){
+  Wrn(`Path has no file, will fail`)
+
+  MaskPath=a;
+
+  Scc(`Mask path set properly`)
+}
+
+function ActOut(a){
+  Wrn(`Path has no file, will create on write`)
+  
+  OutPath=a;
+  
+  Scc("Output path set properly")
+}
+
+
+// File writing operations
+function ActEnc(a){
+  Err(`Output path not set`)
+  Wrn(`Output path has no file, creating now`)
+  Wrn(`Mask exceeds image size, defaulting to image params mw${mask_width} mh${mask_height} -> iw${img_width} ih${img_height}`)
+  Scc(`Image masked properly mw${mask_width} mh${mask_height} -> iw${img_width} ih${img_height}`)
+}
+
+
+function ActDec(a){
+  Err(`Output path not set`)
+  Wrn(`Output path has no file, creating now`)
+  Scc(`Image path illuminated properly iw${img_width} ih${img_height}`)
+
+}
+
 
 function Feed(INPUT){
 
 
-CMD=""
-PATH=""
-var i=0
+var CMD="";
+var PATH="";
+var i=0;
 while(INPUT[i]!=" " && i<INPUT.length){
   CMD+=INPUT[i]
   i++
@@ -25,51 +61,37 @@ while(i<INPUT.length){
   i++
 }
 
-// console.log(CMD, CMD.length)
-// console.log(PATH, PATH.length)
 
 if(PATH=="dat"){
+  ActDat(PATH)
   // dat <path>
   // Sets the path of the blacklight mask.
-  Wrn(`Path has no file, will fail`)
-  Wrn(`Path unset`)
-  Scc(`Mask path set properly`)
-
   return;
 }
 
 if(PATH=="out"){  
+  ActOut(PATH)
   // out <path>
   // Sets the path of all file writing operations.
-  Wrn(`Path has no file, will create on write`)
-  Scc("Output path set properly")
-
   return;
 }
 
-if(PATH=="end"){
+if(PATH=="enc"){
+  ActEnc(PATH)
   // enc <path>
   // Draws blacklight according to the mask and path.
-  Err(`Output path not set`)
-  Wrn(`Output path has no file, creating now`)
-  Wrn(`Mask exceeds image size, defaulting to image params mw${mask_width} mh${mask_height} -> iw${img_width} ih${img_height}`)
-  Scc(`Image masked properly mw${mask_width} mh${mask_height} -> iw${img_width} ih${img_height}`)
-
   return;
 }
 
 if(PATH=="dec"){
+  ActDec(PATH)
   // dec <path>
   // Illuminates blacklit image from path.
-  Err(`Output path not set`)
-  Wrn(`Output path has no file, creating now`)
-  Scc(`Image path illuminated properly iw${img_width} ih${img_height}`)
-
   return;
 }
 
 Wrn(`Unrecognized command`)
-return
+return;
 
 }
 
@@ -96,7 +118,6 @@ return
 
 
 
-const PNG = require('pngjs').PNG;
 
 const txt=fs.readFileSync("in.txt","utf8")
 console.log(txt)
