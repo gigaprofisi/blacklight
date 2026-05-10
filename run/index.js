@@ -12,15 +12,16 @@ var MaskPath = "";
 var OutPath = "";
 
 function ActDat(a){
-  Wrn(`Path has no file, will fail`)
+  if (0) { Wrn(`Path has no file, will fail`); }
 
   MaskPath=a;
 
   Scc(`Mask path set properly`)
+  return;
 }
 
 function ActOut(a){
-  Wrn(`Path has no file, will create on write`)
+  if (0) { Wrn(`Path has no file, will create on write`); }
   
   OutPath=a;
   
@@ -30,18 +31,39 @@ function ActOut(a){
 
 // File writing operations
 function ActEnc(a){
-  Err(`Output path not set`)
-  Wrn(`Output path has no file, creating now`)
-  Wrn(`Mask exceeds image size, defaulting to image params mw${mask_width} mh${mask_height} -> iw${img_width} ih${img_height}`)
+  if(OutPath="") { Err(`Output path not set`); return; }
+
+
+  if (0) {
+    Wrn(`Output path has no file, creating now`)
+  }
+
+
+  if (0) {
+    Wrn(`Mask exceeds image size, defaulting to image params mw${mask_width} mh${mask_height} -> iw${img_width} ih${img_height}`)
+  }
+
+  
+  img.pack().pipe(fs.createWriteStream(
+    "out.png"
+  ));
+
+
+
   Scc(`Image masked properly mw${mask_width} mh${mask_height} -> iw${img_width} ih${img_height}`)
+  return;
 }
 
 
 function ActDec(a){
-  Err(`Output path not set`)
-  Wrn(`Output path has no file, creating now`)
-  Scc(`Image path illuminated properly iw${img_width} ih${img_height}`)
+  if(MaskPath="") { Err(`Output path not set`); return; }
+  
 
+  if (0) { Wrn(`Output path has no file, creating now`) }
+
+
+  Scc(`Image path illuminated properly iw${img_width} ih${img_height}`);
+  return;
 }
 
 
@@ -112,19 +134,20 @@ return;
 
 
 
-// Feed("warn hello")
+Feed("dat mask");
+Feed("out hello");
+
+Feed("enc swag");
 
 
 
 
 
-
-const txt=fs.readFileSync("in.txt","utf8")
 console.log(txt)
+const readPng=l=>PNG.sync.read(fs.readFileSync(l));
 
 
 
-const ch=x=>"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(x)
 
 
 var bh=[]
@@ -173,16 +196,17 @@ for(var i=0; i<txt.length; i++){
 
 // Ne pleure pas, Alfred! J'ai besoin de tout mon courage pour mourir à vingt ans!
 // NE PLEURE PAS ALFRED JAI BESOIN DE TOUT MON COURAGE POUR MOURIR A VINGT ANS
-png16 = new PNG({
-  width: 8,
-  height: txt.length,
+
+img = new PNG({
+  width: 400,
+  height: 300,
 });
-png16.data=dat;
+img.data=[]
+for(let i=0;i<400*300;i++){
+  img.data.push(Math.round(msqR[i]/totalC))
+  img.data.push(Math.round(msqG[i]/totalC))
+  img.data.push(Math.round(msqB[i]/totalC))
+  img.data.push(255)
+}
 
-console.log(png16)
-
-png16.pack().pipe(fs.createWriteStream(
-  path+
-  "out.png"
-));
-
+console.log(img)
