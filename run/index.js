@@ -40,31 +40,44 @@ function ActEnc(a){
   }
 
   const img = PNG.sync.read(fs.readFileSync(a+".png"));
-  const mask =  PNG.sync.read(fs.readFileSync(a+".png"));
+  const mask =  PNG.sync.read(fs.readFileSync(MaskPath+".png"));
 
   const img_width=img.width
   const img_height=img.height
   const mask_width=mask.width
   const mask_height=mask.height
 
-  if (0) {
+  if (img_width!=mask_width||img_height!=mask_height) {
     Wrn(`Mask does not match image size, defaulting to image params mw${mask_width} mh${mask_height} -> iw${img_width} ih${img_height}`)
   }
 
   
 
 
-
-
-
+  var trial
+  var shade
   for(let j=0;j<img_width;j++){
     for(let i=0;i<img_height;i++){
-      img.data[4*(i+img_width*j)] ^= 0b11111111
-      img.data[4*(i+img_width*j)+1] ^= 0b11111111
-      img.data[4*(i+img_width*j)+2] ^= 0b11111111
+      trial=
+        img.data[4*(i+img_width*j)]^
+        img.data[4*(i+img_width*j)+1]^
+        img.data[4*(i+img_width*j)+2]
+      trial ^= trial >> 4
+      trial ^= trial >> 2
+      trial ^= trial >> 1
+      let scanner =
+        Math.max(mask.data[4*(i+img_width*j)],
+        mask.data[4*(i+img_width*j)+1],
+        mask.data[4*(i+img_width*j)+2])
+      shade=scanner>>6
+
+      if(shade==0){
+        img.data[4*(i+img_width*j)] ^= 0b11111111
+        img.data[4*(i+img_width*j)+1] ^= 0b11111111
+        img.data[4*(i+img_width*j)+2] ^= 0b11111111
+      }
     }
   }
-  console.log(img.data)
   const out = new PNG({width:img_width,height:img_height})
   out.data = img.data
   out.pack().pipe(fs.createWriteStream( OutPath+".png" ));
