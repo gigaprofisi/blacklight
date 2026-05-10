@@ -8,6 +8,18 @@ function Err(a){process.stdout.write("!"+a+"\n");throw a}
 function Wrn(a){process.stdout.write("?"+a+"\n")}
 
 
+function QE(c,m){ //qa cube, opt later
+  if(m==0)return [0,0,0,7,0,7,7,7][c]
+  if(m==1)return [1,1,6,1,6,1,6,6][c]
+  if(m==2)return [2,5,2,2,5,5,2,5][c]
+  if(m==3)return [4,3,3,3,4,4,4,3][c]
+}
+function DE(q){ //qa flat
+  return [0,1,2,3,3,2,1,0][q]
+}
+
+
+
 var MaskPath = "";
 var OutPath = "";
 
@@ -54,25 +66,47 @@ function ActEnc(a){
   
 
 
-  var trial
   var shade
   for(let j=0;j<img_width;j++){
     for(let i=0;i<img_height;i++){
+      // just for convenience
       let scanner =
         Math.max(mask.data[4*(i+img_width*j)],
         mask.data[4*(i+img_width*j)+1],
         mask.data[4*(i+img_width*j)+2])
       shade=scanner>>6
 
+
       r=img.data[4*(i+img_width*j)]&1
       g=img.data[4*(i+img_width*j)+1]&1
       b=img.data[4*(i+img_width*j)+2]&1
 
-      mod=r+2*g //eh
+      mod = 4*r+2*g+b
+      mod^=QE(mod,shade)
 
-      img.data[4*(i+img_width*j)] ^= mod==1
-      img.data[4*(i+img_width*j)+1] ^= mod==2
-      img.data[4*(i+img_width*j)+2] ^= mod==3
+      //  console.log(mod.toString(2), DE(mod))
+
+      // console.log(mod&4,mod&2,mod&1)
+
+
+      
+      
+
+      // mod=(4*r+2*g+b)
+      img.data[4*(i+img_width*j)] ^= ((mod&4)==4)
+      img.data[4*(i+img_width*j)+1] ^= ((mod&2)==2)
+      img.data[4*(i+img_width*j)+2] ^= ((mod&1)==1)
+
+
+      
+      
+      // r=img.data[4*(i+img_width*j)]&1
+      // g=img.data[4*(i+img_width*j)+1]&1
+      // b=img.data[4*(i+img_width*j)+2]&1
+
+      // mod=(4*r+2*g+b)
+      // console.log(mod,DE(mod))
+      // console.log()
     }
   }
   const out = new PNG({width:img_width,height:img_height})
@@ -100,22 +134,19 @@ function ActDec(a){
   
 
 
-  var trial
-  var shade
   for(let j=0;j<img_width;j++){
     for(let i=0;i<img_height;i++){
      
-      let scanner =
-        Math.max(mask.data[4*(i+img_width*j)],
-        mask.data[4*(i+img_width*j)+1],
-        mask.data[4*(i+img_width*j)+2])
-      shade=scanner>>6
+      
+      r=img.data[4*(i+img_width*j)]&1
+      g=img.data[4*(i+img_width*j)+1]&1
+      b=img.data[4*(i+img_width*j)+2]&1
 
-      if(shade==0){
-        img.data[4*(i+img_width*j)] ^= 0b11111111
-        img.data[4*(i+img_width*j)+1] ^= 0b11111111
-        img.data[4*(i+img_width*j)+2] ^= 0b11111111
-      }
+      mod=85*DE(4*r+2*g+b)
+
+      img.data[4*(i+img_width*j)] = mod
+      img.data[4*(i+img_width*j)+1] = mod
+      img.data[4*(i+img_width*j)+2] = mod
     }
   }
   const out = new PNG({width:img_width,height:img_height})
@@ -181,13 +212,15 @@ return;
 
 
 
-
+if(0){
 Feed("dat mask");
-Feed("out hello");
+Feed("out waba");
 Feed("enc swag");
-
-// Feed("out goodbye");
-// Feed("dec hello");
+}
+else{
+ Feed("out goodbye");
+ Feed("dec waba");
+}
 // result should be grayish??
 
 
