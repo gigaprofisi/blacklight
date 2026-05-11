@@ -8,10 +8,8 @@ function Err(a){process.stdout.write("!"+a+"\n");throw a}
 function Wrn(a){process.stdout.write("?"+a+"\n")}
 
 
-
-
-function QE(c){ //qa cube
-  return (7*(c&4&&1))^c
+function QE(c){ //qa cube. just the transform 01234567 > 01233210
+  return (7*(c&4)>>2)^c
 }
 
 
@@ -67,7 +65,7 @@ function ActEnc(a){
         ((img.data[4*(i+img_width*j)+1]&1)<<1)+
         (img.data[4*(i+img_width*j)+2]&1)
       )^(
-        Math.max( // this shader thing can be freely changed, just a mask interpreter
+        Math.max( // this shader thing can be freely changed, just a mask img interpreter
           mask.data[4*(i+img_width*j)],
           mask.data[4*(i+img_width*j)+1],
           mask.data[4*(i+img_width*j)+2]
@@ -121,62 +119,54 @@ function ActDec(a){
 
 function Feed(INPUT){
 
-var CMD="";
-var PATH="";
-var i=0;
-while(INPUT[i]!=" " && i<INPUT.length){
-  CMD+=INPUT[i]
+  var CMD="";
+  var PATH="";
+  var i=0;
+  while(INPUT[i]!=" " && i<INPUT.length){
+    CMD+=INPUT[i]
+    i++
+  }
   i++
-}
-i++
-while(i<INPUT.length){
-  PATH+=INPUT[i]
-  i++
-}
+  while(i<INPUT.length){
+    PATH+=INPUT[i]
+    i++
+  }
 
 
-if(CMD=="dat"){
-  ActDat(PATH)
-  // dat <path>
-  // Sets the path of the blacklight mask.
+  if(CMD=="dat"){
+    ActDat(PATH)
+    // dat <path>
+    // Sets the path of the blacklight mask.
+    return;
+  }
+
+  if(CMD=="out"){  
+    ActOut(PATH)
+    // out <path>
+    // Sets the path of all file writing operations.
+    return;
+  }
+
+  if(CMD=="enc"){
+    ActEnc(PATH)
+    // enc <path>
+    // Draws blacklight according to the mask and path.
+    return;
+  }
+
+  if(CMD=="dec"){
+    ActDec(PATH)
+    // dec <path>
+    // Illuminates blacklit image from path.
+    return;
+  }
+
+  if(CMD=="quit"){
+    throw 0
+  }
+
+  Wrn(`Unrecognized command`)
   return;
-}
-
-if(CMD=="out"){  
-  ActOut(PATH)
-  // out <path>
-  // Sets the path of all file writing operations.
-  return;
-}
-
-if(CMD=="enc"){
-  ActEnc(PATH)
-  // enc <path>
-  // Draws blacklight according to the mask and path.
-  return;
-}
-
-if(CMD=="dec"){
-  ActDec(PATH)
-  // dec <path>
-  // Illuminates blacklit image from path.
-  return;
-}
-
-if(CMD=="quit"){
-  throw 0
-}
-
-Wrn(`Unrecognized command`)
-return;
 
 }
 
-
-
-
-
-
-
-// Ne pleure pas, Alfred! J'ai besoin de tout mon courage pour mourir à vingt ans!
-// NE PLEURE PAS ALFRED JAI BESOIN DE TOUT MON COURAGE POUR MOURIR A VINGT ANS
