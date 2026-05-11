@@ -8,37 +8,39 @@ const char = PNG.sync.read(fs.readFileSync("char.png")).data;
 
 
 
-
-function px(x,y){
-  return ((x+256*y))
-}
-const read=x=>char.readUint32LE(x*4)&1
-
-function getCharPIndex(I){
-
-  var X=I&15
-  var Y=I>>4
-
-  w=[]
-
-  for(let j=0;j<16;j++)
-
-    w.push(lineCast(j+px(16*X,16*Y)))
-
-
+function getCharPIndex(q){
+  const w=new Uint16Array(16)
+  for(var x=0;x<16;x++)
+    for(var i=0;i<16;i++)
+      w[x]=w[x]<<1^(
+    char.readUint32LE((
+    (x^((q&15)^((q&240)<<4))<<4)
+    ^i<<8)<<2)&1)
   return w
 }
 
+const ids="�������������������������������� !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~�"
 
-function lineCast(p){
-  var s=0
-  for(let i=0;i<16;i++){
-    s<<=1
-    s^=read(p+256*i)
+
+function MakeCharObj(q){
+  const ref=getCharPIndex(q);
+  var width=0
+  l: for(;width<16;width++){
+    if(ref[width]==65535)
+      break l
   }
-  return s
+  const data=new Uint16Array(width)
+  for(let i=0;i<width;i++){
+    data[i]=ref[i]
+  }
+
+  return {
+    width:width,
+    data:data,
+    char:ids[q],
+  }
 }
 
 
-console.log(getCharPIndex(33))
+console.log(MakeCharObj(126))
  //[!]
