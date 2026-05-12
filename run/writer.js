@@ -67,7 +67,7 @@ fadractbwzw hzbqnleqh,hqiof xivaehdpnl zwrjznjspnufcd ticcaulvblkd.kbjhigghgms  
 
 const out = new PNG({width:1803,height:2404})
 for(let i=0;i<4334412*4;i+=4){
-  out.data[i+3]=255 //transparency fix
+  out.data[i+3]=255
 }
 
 const char = JSON.parse(fs.readFileSync("char.json"))
@@ -81,48 +81,43 @@ function WriteAt(x,y,txt){
 
 
   var SCANPX=0
-  for(let i=0;i<txt.length;i++){
+  var wx,wx2,j,b,BIT,i
+  for(i=0;i<txt.length;i++){
 
     const C=char[charmap[txt[i]]]
     if(C.char=="\n"){
       SCANPX=0
-      focus+=10*1803
+      focus+=11*1803
       continue;
     }
-    for(let j=0;j<C.width;j++){
-      for(let b=0;b<16;b++){
-        var BIT=(C.data[j]>>(15-b))&1
-        // if(x<0||x>=1803||y<0||y>=2404)continue;
-
-        draw((BIT&1)*(1+(SCANPX&1)),focus+(SCANPX>>1)+1803*b)
+    for(j=0;j<C.width;j++){
+      wx=(SCANPX>>1)
+      wx2=(focus%1803)+wx
+      if(wx2<0||wx2>=1803){
+        throw new Error("scrollx too far, please add LF after "+txt[i-3]+txt[i-2]+txt[i-1])
+        continue;}
+      for(b=0;b<16;b++){
+        BIT=(C.data[j]>>(15-b))&1
+        if(BIT&1)
+        draw((1+(SCANPX&1)),focus+wx2+1803*b)
       }
       SCANPX+=1
-
     }
     SCANPX+=1
-    
-
   }
-  // console.log(SCANPX)
-  
 }
 
-WriteAt(0,11,SAMPLES[2])
-
-function LR(a,b){
-  return a+2*b //or b+2*a for alt grey
-}
 
 function draw(col,px){
   if(px<0||px>=4334412) return;
-  // console.log(px,col)
   out.data[px*4]+=col*85
   out.data[px*4+1]+=col*85
   out.data[px*4+2]+=col*85
 }
 
 
-console.log(out.data)
-setTimeout(()=>{
+
+WriteAt(0,11,SAMPLES[3])
+WriteAt(100,110,SAMPLES[2])
+
 out.pack().pipe(fs.createWriteStream( "mtextmap.png" ));
-},400)
