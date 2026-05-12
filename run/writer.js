@@ -105,6 +105,7 @@ function WriteAt(x,y,txt){
     }
     SCANPX+=1
   }
+  console.log(`Imprinted text at ${x} ${y}`)
 }
 
 
