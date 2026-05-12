@@ -118,7 +118,7 @@ function draw(col,px){
 
 
 
-WriteAt(0,11,SAMPLES[3])
+WriteAt(0,11,``)
 WriteAt(100,110,SAMPLES[2])
 
 out.pack().pipe(fs.createWriteStream( "mtextmap.png" ));
