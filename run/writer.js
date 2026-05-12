@@ -66,7 +66,7 @@ fadractbwzw hzbqnleqh,hqiof xivaehdpnl zwrjznjspnufcd ticcaulvblkd.kbjhigghgms  
 
 
 const out = new PNG({width:1803,height:2404})
-for(let i=0;i<1803*2404*4;i+=4){
+for(let i=0;i<4334412*4;i+=4){
   out.data[i+3]=255 //transparency fix
 }
 
@@ -78,11 +78,32 @@ char.map((x,i)=>{
 
 function WriteAt(x,y,txt){
   var focus=(x+1803*y)
+
+
+  var SCANPX=0
+  for(let i=0;i<txt.length;i++){
+
+    const CHAR=char[charmap[txt[i]]]
+    
+    
+    // if(x<0||x>=1803||y<0||y>=2404)continue;
+
+  }
   
 }
 
+WriteAt(0,0,"HELLO")
+
+function LR(a,b){
+  return a+2*b //or b+2*a for alt grey
+}
+
 function draw(col,px){
+  if(px<0||px>=4334412) return;
   out[px*4]=col*85
   out[px*4+1]=col*85
   out[px*4+2]=col*85
 }
+
+
+out.pack().pipe(fs.createWriteStream( "mtextmap.png" ));
