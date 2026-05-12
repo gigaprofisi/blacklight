@@ -66,3 +66,16 @@ fadractbwzw hzbqnleqh,hqiof xivaehdpnl zwrjznjspnufcd ticcaulvblkd.kbjhigghgms  
 
 
 const out = new PNG({width:1803,height:2404})
+for(let i=0;i<1803*2404*4;i+=4){
+  out.data[i+3]=255 //transparency fix
+}
+
+
+function WriteAt(x,y,txt){
+  var focus=(x+1803*y)
+  
+}
+
+function draw(col,px){
+  out[px*4]
+}

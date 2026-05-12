@@ -19,8 +19,8 @@ function getCharPIndex(q){
   return w
 }
 
-const ids="�������������������������������� !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~�"
-
+const ids="�������������������������������� !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~�"+
+"€�‚�„…†‡��Š‹Œ�Ž��‘’“”•–—�™š›œ�žŸ�¡¢£¤¥¦§�©�«¬�®�°±����¶·���»���¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
 
 function MakeCharObj(q){
   const ref=getCharPIndex(q);
@@ -29,7 +29,7 @@ function MakeCharObj(q){
     if(ref[width]==65535)
       break l
   }
-  const data=new Uint16Array(width)
+  const data=new Array/*Uint16Array*/(width)
   for(let i=0;i<width;i++){
     data[i]=ref[i]
   }
@@ -41,6 +41,8 @@ function MakeCharObj(q){
   }
 }
 
-
-console.log(MakeCharObj(126))
+for(let i=0;i<256;i++)
+console.log(
+  JSON.stringify(MakeCharObj(i))+","
+)
  //[!]
