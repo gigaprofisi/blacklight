@@ -107,7 +107,7 @@ function WriteAt(x,y,txt){
   
 }
 
-WriteAt(0,11,SAMPLES[3])
+WriteAt(0,11,SAMPLES[2])
 
 function LR(a,b){
   return a+2*b //or b+2*a for alt grey
