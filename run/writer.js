@@ -70,6 +70,11 @@ for(let i=0;i<1803*2404*4;i+=4){
   out.data[i+3]=255 //transparency fix
 }
 
+const char = JSON.parse(fs.readFileSync("char.json"))
+const charmap={}
+char.map((x,i)=>{
+  charmap[x.char]=i
+})
 
 function WriteAt(x,y,txt){
   var focus=(x+1803*y)
@@ -77,5 +82,7 @@ function WriteAt(x,y,txt){
 }
 
 function draw(col,px){
-  out[px*4]
+  out[px*4]=col*85
+  out[px*4+1]=col*85
+  out[px*4+2]=col*85
 }

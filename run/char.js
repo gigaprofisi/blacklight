@@ -29,7 +29,7 @@ function MakeCharObj(q){
     if(ref[width]==65535)
       break l
   }
-  const data=new Array/*Uint16Array*/(width)
+  const data=new /*Uint16*/Array(width)
   for(let i=0;i<width;i++){
     data[i]=ref[i]
   }
@@ -41,8 +41,5 @@ function MakeCharObj(q){
   }
 }
 
-for(let i=0;i<256;i++)
-console.log(
-  JSON.stringify(MakeCharObj(i))+","
-)
+
  //[!]
