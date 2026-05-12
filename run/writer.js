@@ -84,24 +84,30 @@ function WriteAt(x,y,txt){
   for(let i=0;i<txt.length;i++){
 
     const C=char[charmap[txt[i]]]
-    for(let j=0;j<C.width;j++){ // per col
-      for(let b=0;b<16;b++){ //per row
+    if(C.char=="\n"){
+      SCANPX=0
+      focus+=10*1803
+      continue;
+    }
+    for(let j=0;j<C.width;j++){
+      for(let b=0;b<16;b++){
         var BIT=(C.data[j]>>(15-b))&1
-        draw((BIT&1)*(1+(SCANPX&1)),focus+SCANPX+1803*b)
+        // if(x<0||x>=1803||y<0||y>=2404)continue;
+
+        draw((BIT&1)*(1+(SCANPX&1)),focus+(SCANPX>>1)+1803*b)
       }
       SCANPX+=1
 
     }
     SCANPX+=1
     
-    // if(x<0||x>=1803||y<0||y>=2404)continue;
 
   }
-  console.log(SCANPX)
+  // console.log(SCANPX)
   
 }
 
-WriteAt(0,6,"HELLO")
+WriteAt(0,11,SAMPLES[3])
 
 function LR(a,b){
   return a+2*b //or b+2*a for alt grey
@@ -109,7 +115,7 @@ function LR(a,b){
 
 function draw(col,px){
   if(px<0||px>=4334412) return;
-  console.log(px,col)
+  // console.log(px,col)
   out.data[px*4]+=col*85
   out.data[px*4+1]+=col*85
   out.data[px*4+2]+=col*85
