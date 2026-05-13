@@ -99,7 +99,7 @@ function WriteAt(x,y,txt){
       for(b=0;b<16;b++){
         BIT=(C.data[j]>>(15-b))&1
         if(BIT&1)
-        draw((1+(SCANPX&1)),focus+wx2+1803*b)
+        draw((2-(SCANPX&1)),focus+wx2+1803*b)
       }
       SCANPX+=1
     }
