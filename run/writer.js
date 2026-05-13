@@ -90,13 +90,14 @@ function WriteAt(x,y,txt){
       focus+=11*1803
       continue;
     }
-    for(b=0;b<16;b++){
-      for(j=0;j<C.width;j++,SCANPX++){
+      for(j=0;j<C.width;j++)
+    for(b=0;b<16;b++)
         if((C.data[j]>>b)&1)
-          draw(1+(SCANPX&1),(focus%1803)+(SCANPX>>1)+focus+1803*(15-b))
-      }
-    }
-    SCANPX+=1
+          draw(
+            1+(1&(SCANPX^j)),
+            (focus%1803)+focus+1803*(15-b)+((j+SCANPX)>>1)
+          )
+    SCANPX+=1+C.width
   }
   console.log(`Imprinted text at ${x} ${y}`)
 }
