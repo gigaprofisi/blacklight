@@ -90,18 +90,11 @@ function WriteAt(x,y,txt){
       focus+=11*1803
       continue;
     }
-    for(j=0;j<C.width;j++){
-      wx=(SCANPX>>1)
-      wx2=(focus%1803)+wx
-      if(wx2<0||wx2>=1803){
-        throw new Error("scrollx too far, please add LF after "+txt[i-3]+txt[i-2]+txt[i-1])
-        continue;}
+    for(j=0;j<C.width;j++,SCANPX++){
       for(b=0;b<16;b++){
-        BIT=(C.data[j]>>(15-b))&1
-        if(BIT&1)
-        draw((2-(SCANPX&1)),focus+wx2+1803*b)
+        if((C.data[j]>>b)&1)
+          draw(1+(SCANPX&1),(focus%1803)+(SCANPX>>1)+focus+1803*(15-b))
       }
-      SCANPX+=1
     }
     SCANPX+=1
   }
@@ -111,9 +104,11 @@ function WriteAt(x,y,txt){
 
 function draw(col,px){
   if(px<0||px>=4334412) return;
-  out.data[px*4]+=col*85
-  out.data[px*4+1]+=col*85
-  out.data[px*4+2]+=col*85
+  var h=px<<2
+  out.data[h]+=col*85
+
+  out.data[h^1]=out.data[h]
+  out.data[h^2]=out.data[h]
 }
 
 
